@@ -7,7 +7,7 @@
     </style>
     <meta charset="utf-8" />
 
-<title>Assignment_10</title>
+<title>Assignment_11</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13121,12 +13121,17 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="20145271-Geum-Kang-Hyeon">20145271 Geum Kang Hyeon<a class="anchor-link" href="#20145271-Geum-Kang-Hyeon">&#182;</a></h4><h2 id="Digit-Classifying-Using-MNIST-Dateset">Digit Classifying Using MNIST Dateset<a class="anchor-link" href="#Digit-Classifying-Using-MNIST-Dateset">&#182;</a></h2>$$$$<p>Let $x = (x_1, x_2, ... , x_m)$ be a vector representing an image in the dataset.</p>
+<h4 id="20145271-Geum-Kang-Hyeon">20145271 Geum Kang Hyeon<a class="anchor-link" href="#20145271-Geum-Kang-Hyeon">&#182;</a></h4><h2 id="Digit-Classifying-Using-MNIST-Dateset">Digit Classifying Using MNIST Dateset<a class="anchor-link" href="#Digit-Classifying-Using-MNIST-Dateset">&#182;</a></h2>$$$$<p>Build a binary classifier based on k random features for each digit against all the other digits at MNIST dataset</p>
+<p>Let $x = (x_1, x_2, ... , x_m)$ be a vector representing an image in the dataset.</p>
 <p>The prediction function $f_w(x)$ is defined by the linear combination of data $(1, x)$ and the model parameter $w$:
-$f_d(x; w) = w_0 * 1 + w_1 * x_1 + w_2 * x_2 + ... + w_m * x_m $
+$f_d(x; w) = w_0 * 1 + w_1 * g_1 + w_2 * g_2 + ... + w_k * g_k $
 where $w = (w_0, w_1, ... , w_m)$</p>
-<p>The prediction function f_w(x) should have the following values:
+<p>where w = (w_0, w_1, ... , w_k) and the basis function g_k is defined by the inner product of random vector r_k and input vector x.</p>
+<p>You may want to try to use g_k = max( inner production( r_k, x ), 0 ) to see if it improves the performance.</p>
+<p>The prediction function $f_d(x; w)$ should have the following values:
+$$$$
 $f_d(x; w)$ = +1 if label(x) is $d$,
+$$$$
 $f_d(x; w)$ = -1 if label(x) is not $d$</p>
 <p>The optimal model parameter w is obtained by minimizing the following objective function:
 $\sum_i ( f_w(x^{i} - y^{i} )^2)$</p>
@@ -13145,11 +13150,12 @@ $\sum_i ( f_w(x^{i} - y^{i} )^2)$</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">random</span>
 
 <span class="n">train_file_data</span> <span class="o">=</span> <span class="s2">&quot;mnist_train.csv&quot;</span>
 <span class="n">test_file_data</span> <span class="o">=</span> <span class="s2">&quot;mnist_test.csv&quot;</span>
@@ -13192,7 +13198,7 @@ $\sum_i ( f_w(x^{i} - y^{i} )^2)$</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Read Train Data</span>
@@ -13224,13 +13230,52 @@ $\sum_i ( f_w(x^{i} - y^{i} )^2)$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="3.-Align-Data-A-anb-b-in-formula--$Ax-=-b$-for-each-digit">3. Align Data A anb b in formula  $Ax = b$ for each digit<a class="anchor-link" href="#3.-Align-Data-A-anb-b-in-formula--$Ax-=-b$-for-each-digit">&#182;</a></h4>
+<h4 id="3.-Multiply-Random-Vectoy">3. Multiply Random Vectoy<a class="anchor-link" href="#3.-Multiply-Random-Vectoy">&#182;</a></h4><p>$g_k$ is defined by the inner product of random vector $r_k$ and input vector $x$.</p>
+<p>$g_k$ = max( inner production( $r_k$, $x$ ), 0 )</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">random_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">size_row</span><span class="o">*</span><span class="n">size_col</span><span class="p">,</span> <span class="n">size_row</span><span class="o">*</span><span class="n">size_col</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size_row</span><span class="o">*</span><span class="n">size_col</span><span class="p">)</span> <span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size_row</span><span class="o">*</span><span class="n">size_col</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">random_vector</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">list_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">list_image</span><span class="p">,</span> <span class="n">random_vector</span><span class="p">)</span>
+<span class="n">list_image_Test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">list_image_Test</span><span class="p">,</span> <span class="n">random_vector</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size_row</span><span class="o">*</span><span class="n">size_col</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">list_image</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">list_image</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count_Test</span><span class="p">)</span> <span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size_row</span><span class="o">*</span><span class="n">size_col</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">list_image_Test</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">list_image_Test</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="4.-Align-Data-A-anb-b-in-formula--$Ax-=-b$-for-each-digit">4. Align Data A anb b in formula  $Ax = b$ for each digit<a class="anchor-link" href="#4.-Align-Data-A-anb-b-in-formula--$Ax-=-b$-for-each-digit">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">count</span><span class="p">,</span> <span class="n">size_row</span><span class="o">*</span><span class="n">size_col</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
@@ -13260,7 +13305,7 @@ $\sum_i ( f_w(x^{i} - y^{i} )^2)$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="4.-Calculate-x-for-each-digit">4. Calculate x for each digit<a class="anchor-link" href="#4.-Calculate-x-for-each-digit">&#182;</a></h4><p>$ x = (A^TA)^{-1}A^Tb $
+<h4 id="5.-Calculate-x-for-each-digit">5. Calculate x for each digit<a class="anchor-link" href="#5.-Calculate-x-for-each-digit">&#182;</a></h4><p>$ x = (A^TA)^{-1}A^Tb $
 $$$$
 $x = A^+ b$</p>
 
@@ -13269,7 +13314,7 @@ $x = A^+ b$</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">transpose_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
@@ -13294,7 +13339,7 @@ $x = A^+ b$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="5.-Compute-TP,-FP,-TN,-FN-using-Train-Dataset">5. Compute TP, FP, TN, FN using Train Dataset<a class="anchor-link" href="#5.-Compute-TP,-FP,-TN,-FN-using-Train-Dataset">&#182;</a></h4><p>TP, TN are Answer, FP, FN are Wrong Answer</p>
+<h4 id="6.-Compute-TP,-FP,-TN,-FN-using-Train-Dataset">6. Compute TP, FP, TN, FN using Train Dataset<a class="anchor-link" href="#6.-Compute-TP,-FP,-TN,-FN-using-Train-Dataset">&#182;</a></h4><p>TP, TN are Answer, FP, FN are Wrong Answer</p>
 <p>Put the actual data in the expression Ax = b and compare it with the answer in the train dataset</p>
 
 </div>
@@ -13302,11 +13347,10 @@ $x = A^+ b$</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">TP</span><span class="p">,</span> <span class="n">TN</span><span class="p">,</span> <span class="n">FP</span><span class="p">,</span> <span class="n">FN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">):</span>
@@ -13330,7 +13374,7 @@ $x = A^+ b$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="6.-Compute-TP,-FP,-TN,-FN-using-Test-Dataset">6. Compute TP, FP, TN, FN using Test Dataset<a class="anchor-link" href="#6.-Compute-TP,-FP,-TN,-FN-using-Test-Dataset">&#182;</a></h4><p>x uses x obtained through the train dataset</p>
+<h4 id="7.-Compute-TP,-FP,-TN,-FN-using-Test-Dataset">7. Compute TP, FP, TN, FN using Test Dataset<a class="anchor-link" href="#7.-Compute-TP,-FP,-TN,-FN-using-Test-Dataset">&#182;</a></h4><p>x uses x obtained through the train dataset</p>
 <p>Model from train dataset can be verified</p>
 
 </div>
@@ -13338,7 +13382,7 @@ $x = A^+ b$</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">TP_Test</span><span class="p">,</span> <span class="n">TN_Test</span><span class="p">,</span> <span class="n">FP_Test</span><span class="p">,</span> <span class="n">FN_Test</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -13366,14 +13410,14 @@ $x = A^+ b$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="7.-Result">7. Result<a class="anchor-link" href="#7.-Result">&#182;</a></h4><p>Error Rate = (True Negative + False Negative) / Total Count * 100</p>
+<h4 id="8.-Result">8. Result<a class="anchor-link" href="#8.-Result">&#182;</a></h4><p>Error Rate = (True Negative + False Negative) / Total Count * 100</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[Train Data Set]&#39;</span><span class="p">)</span>
@@ -13403,15 +13447,15 @@ $x = A^+ b$</p>
 <pre>[Train Data Set]
 Total Data Count : 60000
 
-TRUE POSITIVE RATE: 42506 (70.8%)
-ERROR RATE: 14031 (23.4%)
+TRUE POSITIVE RATE: 51370 (85.6%)
+ERROR RATE: 7478 (12.5%)
 
 
 [Test Data Set]
 Total Data Count : 10000
 
-TRUE POSITIVE RATE : 7013 (70.1%)
-ERROR RATE : 2423 (24.2%)
+TRUE POSITIVE RATE : 8635 (86.4%)
+ERROR RATE : 1174 (11.7%)
 </pre>
 </div> </div>
 
@@ -13432,13 +13476,13 @@ ERROR RATE : 2423 (24.2%)
 <tbody>
 <tr>
 <td style="text-align:left"><strong>Positive</strong></td>
-<td style="text-align:center"><center>42506 (70.8%) </center></td>
-<td style="text-align:right"><center>3463 (5.8%) </center></td>
+<td style="text-align:center"><center>51370 (85.6%) </center></td>
+<td style="text-align:right"><center>1152 (1.9%) </center></td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Negative</strong></td>
-<td style="text-align:center"><center>5421 (9.0%) </center></td>
-<td style="text-align:right"><center>8610 (14.3%) </center></td>
+<td style="text-align:center"><center>2549 (4.2%) </center></td>
+<td style="text-align:right"><center>4929 (8.2%) </center></td>
 </tr>
 </tbody>
 </table>
@@ -13452,13 +13496,13 @@ ERROR RATE : 2423 (24.2%)
 <tbody>
 <tr>
 <td style="text-align:left"><strong>Positive</strong></td>
-<td style="text-align:center"><center>7013 (70.1%) </center></td>
-<td style="text-align:right"><center>564 (5.6%) </center></td>
+<td style="text-align:center"><center>8635 (86.4%) </center></td>
+<td style="text-align:right"><center>191 (0.3%) </center></td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Negative</strong></td>
-<td style="text-align:center"><center> 902 (9.0%) </center></td>
-<td style="text-align:right"><center>1521 (15.2%) </center></td>
+<td style="text-align:center"><center> 475 (0.8%) </center></td>
+<td style="text-align:right"><center>699 (1.2%) </center></td>
 </tr>
 </tbody>
 </table>
